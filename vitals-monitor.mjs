@@ -35,7 +35,7 @@ function vitalStatusChecker(temperature, pulseRate, spo2){
   }
 }
 
-async function vitals_ok(temperature,pulseRate,spo2) {
+async function vitalsOk(temperature,pulseRate,spo2) {
     const [status, message] = vitalStatusChecker(temperature,pulseRate,spo2);
 
     if(!status){
@@ -46,4 +46,5 @@ async function vitals_ok(temperature,pulseRate,spo2) {
     return status;
     
 }
+
 
