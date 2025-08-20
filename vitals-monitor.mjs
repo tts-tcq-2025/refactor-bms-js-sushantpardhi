@@ -1,27 +1,48 @@
-async function loadingEffect(){
-  for (let i = 0; i < 6; i++) {
+async function loadingEffect(iteration, duration){
+  for (let i = 0; i < iteration; i++) {
       process.stdout.write("\r* ");
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, duration));
       process.stdout.write("\r *");
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, duration));
     }
 }
 
-
-export async function vitalsOk(temperature, pulseRate, spo2) {
-  if (temperature > 102 || temperature < 95) {
-    console.log("Temperature is critical!");
-    await loadingEffect();
-    return false;
-  } else if (pulseRate < 60 || pulseRate > 100) {
-    console.log("Pulse Rate is out of range!");
-    await loadingEffect();
-    return false;
-  } else if (spo2 < 90) {
-    console.log("Oxygen Saturation out of range!");
-    await loadingEffect();
-    return false;
-  }
-  return true;
+function isTemperatureOk(temperature){
+  return temperature > 102 || temperature < 95;
 }
 
+function isPulseRateOK(pulseRate){
+  return pulseRate < 60 || pulseRate > 100;
+}
+
+function isSPO2OK(spo2){
+  return spo2 < 90;
+}
+
+function vitalStatusChecker(temperature, pulseRate, spo2){
+  const checks = [
+    [isTemperatureOk(temperature), "Temperature is critical!"],
+    [isPulseRateOK(pulseRate),"Pulse Rate is out of range!"],
+    [isSPO2OK(spo2),"Oxygen Saturation out of range!"]
+  ]
+
+  for( const [ok, message] of checks){
+    if(!ok){
+        return [false, message]
+    }
+
+    return [true, "All vitals normal."]
+  }
+}
+
+async function vitalsOk(temperature,pulseRate,spo2) {
+    const [status, message] = vitalStatusChecker(temperature,pulseRate,spo2);
+
+    if(!status){
+        console.log(message);
+        await loadingEffect(6, 1000);
+    }
+
+    return status;
+    
+}
